@@ -131,12 +131,12 @@ class HelloFrame(wx.Frame):
 
     def currentTime(self, event):
         if self.vid:
-            self.currentTimeSecs = timedelta(seconds = round(self.vid.frame))
+            self.currentTimeSecs = timedelta(seconds = round(self.vid.frame / self.vid.frame_rate))
             if event.GetEventObject().GetLabel() == "Set Start Time":
                 self.startTimeBox.SetValue(str(self.currentTimeSecs))
             elif event.GetEventObject().GetLabel() == "Set End Time":
                 self.endTimeBox.SetValue(str(self.currentTimeSecs))
-            print(str(self.currentTimeSecs))
+            
         self.Layout()
     
 
@@ -173,9 +173,10 @@ class HelloFrame(wx.Frame):
             startTime = self.startTimeBox.GetValue()
             endTime = self.endTimeBox.GetValue()
             if startTime == '':
-                startTime = '0:00:00'
+                startTime = '00:00:00'
             if endTime == '':
-                endTime = str(timedelta(seconds = round(self.vid.duration)))
+                endTime = "0" + str(timedelta(seconds = round(self.vid.duration)))
+                print("endtime: " + endTime)
             filename = self.fileNameBox.GetValue()
             if filename == '':
                 filename = 'output.mp4'
@@ -189,7 +190,7 @@ class HelloFrame(wx.Frame):
             print(f'ffmpeg -i {self._originalFile} -ss {startTime} -t {endTime} -c:v copy -c:a copy {outputPath}')
             print()
             os.system(f'ffmpeg -i "{self._originalFile}" -ss {startTime} -t {endTime} -c:v copy -c:a copy "{outputPath}"')
-            os.startfile(outputPath)
+            os.startfile(s[:s.rfind("\\")] + "\\")
             wx.MessageBox("Exported to " + outputPath)
         else:
             wx.MessageBox("No video loaded")
