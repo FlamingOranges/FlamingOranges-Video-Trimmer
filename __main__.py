@@ -2,6 +2,7 @@ import wx
 import pyvidplayer2 as p2
 from datetime import timedelta
 import os
+import subprocess
 class HelloFrame(wx.Frame):
 
 
@@ -133,7 +134,7 @@ class HelloFrame(wx.Frame):
         if self.vid:
             self.currentTimeSecs = timedelta(seconds = round(self.vid.frame / self.vid.frame_rate))
             if event.GetEventObject().GetLabel() == "Set Start Time":
-                self.startTimeBox.SetValue(str(self.currentTimeSecs))
+                self.startTimeBox.SetValue(timedelta(seconds = round(self.vid.frame / self.vid.frame_rate)))
             elif event.GetEventObject().GetLabel() == "Set End Time":
                 self.endTimeBox.SetValue(str(self.currentTimeSecs))
             
@@ -187,10 +188,12 @@ class HelloFrame(wx.Frame):
             #shorter variable
             s = self._originalFile
             outputPath = s[:s.rfind("\\")] + "\\" + filename
-            print(f'ffmpeg -i {self._originalFile} -ss {startTime} -t {endTime} -c:v copy -c:a copy {outputPath}')
+            print(f'ffmpeg -i {self._originalFile} -copyinkf -ss {startTime} -t {endTime} -c:v copy -c:a copy {outputPath}')
             print()
-            os.system(f'ffmpeg -i "{self._originalFile}" -ss {startTime} -t {endTime} -c:v copy -c:a copy "{outputPath}"')
-            os.startfile(s[:s.rfind("\\")] + "\\")
+            os.system(f'ffmpeg -i "{self._originalFile}" -copyinkf -ss {startTime} -t {endTime} -c:v copy -c:a copy "{outputPath}"')
+            # os.startfile(s[:s.rfind("\\")] + "\\")
+            print(outputPath)
+            subprocess.Popen(['explorer', '/select,', os.path.abspath(outputPath)])
             wx.MessageBox("Exported to " + outputPath)
         else:
             wx.MessageBox("No video loaded")
@@ -223,7 +226,7 @@ class HelloFrame(wx.Frame):
     def update(self, event):
             if self.vid:
                 self.slider.SetValue(int((self.vid.frame / self.vid.frame_count) * 100))
-                self.playbackTime.SetLabel(str(timedelta(seconds = round(self.vid.frame))) + "s")
+                self.playbackTime.SetLabel(str(timedelta(seconds = round(self.vid.frame / self.vid.frame_rate))))
             self.videoPanel.Refresh(eraseBackground=False)
     def draw(self, event):
         if self.vid:
