@@ -134,7 +134,7 @@ class HelloFrame(wx.Frame):
         if self.vid:
             self.currentTimeSecs = timedelta(seconds = round(self.vid.frame / self.vid.frame_rate))
             if event.GetEventObject().GetLabel() == "Set Start Time":
-                self.startTimeBox.SetValue(timedelta(seconds = round(self.vid.frame / self.vid.frame_rate)))
+                self.startTimeBox.SetValue(str(self.currentTimeSecs))
             elif event.GetEventObject().GetLabel() == "Set End Time":
                 self.endTimeBox.SetValue(str(self.currentTimeSecs))
             
